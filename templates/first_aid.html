@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>First Aid Guide - Health Tracking System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 1rem;
+        }
+
+        .emergency-card {
+            background-color: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .category-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .category-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .category-content.active {
+            display: block;
+        }
+
+        .step {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .warning {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .back-button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        .search-box {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <div class="nav-buttons">
+                <button onclick="goBack()" class="back-button">← Back</button>
+            </div>
+            <h2>First Aid Guide</h2>
+            <div class="nav-buttons">
+                <button onclick="goToDashboard()" class="back-button">Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="emergency-card">
+            <h3>⚠️ Emergency Numbers</h3>
+            <p style="margin-top: 10px;">Local Emergency: [Local Emergency Number]</p>
+            <p>Ambulance: [Ambulance Number]</p>
+            <p>Poison Control: [Poison Control Number]</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search for first aid information..." onkeyup="searchFirstAid()">
+        </div>
+
+        <div class="category-section">
+            <div class="category-header" onclick="toggleCategory('bleeding')">
+                <h3>Bleeding and Wounds</h3>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="category-content" id="bleeding">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Clean your hands and wear gloves if available
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Apply direct pressure using clean cloth or gauze
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Keep pressure until bleeding stops (usually 10-15 minutes)
+                </div>
+                <div class="warning">
+                    Seek immediate medical attention if:
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Bleeding doesn't stop after 15 minutes of pressure</li>
+                        <li>The wound is deep or gaping</li>
+                        <li>There's an embedded object</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header" onclick="toggleCategory('burns')">
+                <h3>Burns</h3>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="category-content" id="burns">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Cool the burn under cold running water for at least 10 minutes
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Remove any jewelry or tight items near the burned area
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    Cover with clean, non-stick bandage
+                </div>
+                <div class="warning">
+                    Seek immediate medical attention if:
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>The burn is larger than your palm</li>
+                        <li>It's a chemical or electrical burn</li>
+                        <li>The burn affects face, hands, feet, or genitals</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-section">
+            <div class="category-header" onclick="toggleCategory('choking')">
+                <h3>Choking</h3>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="category-content" id="choking">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    Encourage the person to cough
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    Give up to 5 back blows between shoulder blades
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    If unsuccessful, perform abdominal thrusts (Heimlich maneuver)
+                </div>
+                <div class="warning">
+                    Call emergency services immediately if:
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Person cannot speak, cough, or breathe</li>
+                        <li>Person becomes unconscious</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        function toggleCategory(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('active');
+            
+            // Update the toggle icon
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            // Change the icon based on expanded state
+            if (content.classList.contains('active')) {
+                icon.textContent = '-';
+            } else {
+                icon.textContent = '+';
+            }
+        }
+
+        function searchFirstAid() {
+            const input = document.querySelector('.search-input');
+            const filter = input.value.toLowerCase();
+            const sections = document.getElementsByClassName('category-section');
+
+            for (let section of sections) {
+                const header = section.querySelector('.category-header').textContent;
+                const content = section.querySelector('.category-content').textContent;
+                if (header.toLowerCase().includes(filter) || 
+                    content.toLowerCase().includes(filter)) {
+                    section.style.display = "";
+                    if (filter.length > 0) {
+                        section.querySelector('.category-content').classList.add('active');
+                        section.querySelector('.toggle-icon').textContent = '-';
+                    }
+                } else {
+                    section.style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

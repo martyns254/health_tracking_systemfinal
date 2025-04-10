@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical History - Health Tracking System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .history-list {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-button {
+            background-color: transparent;
+            border: 2px solid white;
+            padding: 8px 16px;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-entry {
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .history-entry h4 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            margin: 0.5rem 0;
+        }
+
+        .status-active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-resolved {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-chronic {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 10px;
+            }
+
+            .form-container, .history-list {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <button onclick="goBack()" class="back-button"> Back</button>
+            <h2>Medical History</h2>
+            <button onclick="goToDashboard()" class="back-button">Dashboard</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="form-container">
+            <h3>Add Medical Condition</h3>
+            <form id="medicalHistoryForm">
+                <div class="form-group">
+                    <label for="condition">Medical Condition:</label>
+                    <input type="text" id="condition" required placeholder="Enter medical condition">
+                </div>
+
+                <div class="form-group">
+                    <label for="diagnosedDate">Date Diagnosed:</label>
+                    <input type="date" id="diagnosedDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Current Status:</label>
+                    <select id="status" required>
+                        <option value="">Select status</option>
+                        <option value="Active">Active</option>
+                        <option value="In Treatment">In Treatment</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Chronic">Chronic</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="medications">Current Medications:</label>
+                    <textarea id="medications" rows="3" placeholder="List current medications"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Additional Notes:</label>
+                    <textarea id="notes" rows="4" placeholder="Add any additional notes or details"></textarea>
+                </div>
+
+                <button type="submit" class="button">Save Medical History</button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+
+        <div class="history-list">
+            <h3>Medical History Records</h3>
+            <div id="previousHistory"></div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        // Load existing medical history
+        async function loadMedicalHistory() {
+            const userId = localStorage.getItem('userId');
+            try {
+                const response = await fetch(`/medical/history/${userId}`);
+                if (response.ok) {
+                    const history = await response.json();
+                    const historyHtml = history.map(entry => `
+                        <div class="history-entry">
+                            <h4>${entry.condition_name}</h4>
+                            <div class="status-badge status-${entry.status.toLowerCase()}">
+                                ${entry.status}
+                            </div>
+                            <p><strong>Diagnosed:</strong> ${new Date(entry.diagnosed_date).toLocaleDateString()}</p>
+                            <p><strong>Medications:</strong> ${entry.medications || 'None'}</p>
+                            <p><strong>Notes:</strong> ${entry.notes || 'None'}</p>
+                        </div>
+                    `).join('');
+                    document.getElementById('previousHistory').innerHTML = historyHtml || 'No medical history records';
+                }
+            } catch (error) {
+                console.error('Error loading medical history:', error);
+            }
+        }
+
+        // Form submission
+        document.getElementById('medicalHistoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            
+            try {
+                const response = await fetch('/medical/history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: localStorage.getItem('userId'),
+                        condition: document.getElementById('condition').value,
+                        diagnosedDate: document.getElementById('diagnosedDate').value,
+                        status: document.getElementById('status').value,
+                        medications: document.getElementById('medications').value,
+                        notes: document.getElementById('notes').value
+                    })
+                });
+
+                if (response.ok) {
+                    message.className = 'message success';
+                    message.style.display = 'block';
+                    message.textContent = 'Medical history saved successfully!';
+                    document.getElementById('medicalHistoryForm').reset();
+                    loadMedicalHistory();
+                } else {
+                    message.className = 'message error';
+                    message.style.display = 'block';
+                    message.textContent = 'Failed to save medical history. Please try again.';
+                }
+            } catch (error) {
+                message.className = 'message error';
+                message.style.display = 'block';
+                message.textContent = 'An error occurred. Please try again.';
+            }
+        });
+
+        // Load history when page loads
+        window.addEventListener('load', loadMedicalHistory);
+    </script>
+</body>
+</html>

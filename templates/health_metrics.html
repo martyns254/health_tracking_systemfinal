@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Metrics Tracking - Health Tracking System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .back-button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 1rem;
+        }
+
+        .metric-form {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .metric-form h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .button {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .primary:hover {
+            background-color: #2980b9;
+        }
+
+        .secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .metric-card {
+            background-color: white;
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .metric-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .metric-description {
+            color: #666;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .metric-range {
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .metric-category {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background-color: #e8f4f8;
+            color: #3498db;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .history-section {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+        }
+
+        .history-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .history-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 1rem;
+            margin: 0.8rem 0;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-bottom: 0.3rem;
+        }
+
+        .history-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .history-notes {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .message {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <div class="nav-buttons">
+                <button onclick="goBack()" class="back-button">← Back</button>
+            </div>
+            <h2>Health Metrics Tracking</h2>
+            <div class="nav-buttons">
+                <button onclick="goToDashboard()" class="back-button">Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="metricForm" class="metric-form">
+            <h3 id="formTitle">Log Metric</h3>
+            <form id="logMetricForm">
+                <input type="hidden" id="metricId">
+                <div class="form-group">
+                    <label id="valueLabel">Value:</label>
+                    <input type="number" id="metricValue" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="metricNotes">Notes (optional):</label>
+                    <textarea id="metricNotes" rows="3" placeholder="Add any notes or context for this measurement"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="button primary">Save</button>
+                    <button type="button" class="button secondary" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+
+        <h3 style="margin-bottom: 1rem;">Available Health Metrics</h3>
+        <p style="margin-bottom: 1.5rem; color: #666;">
+            Select a health metric to log and track over time. Regular monitoring helps identify patterns and can provide early warning signs of health issues.
+        </p>
+        
+        <div id="metricsGrid" class="metrics-grid">
+            <div class="empty-state">Loading metrics...</div>
+        </div>
+
+        <div id="historySection" class="history-section" style="display: none;">
+            <h3 id="historyTitle">Metric History</h3>
+            <div id="historyList" class="history-list">
+                <!-- History items will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedMetric = null;
+        
+        // Navigation functions
+        function goBack() {
+            window.history.back();
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+        
+        // Load all available metrics
+        async function loadMetrics() {
+            try {
+                const response = await fetch('/health/metrics');
+                if (response.ok) {
+                    const metrics = await response.json();
+                    displayMetrics(metrics);
+                } else {
+                    document.getElementById('metricsGrid').innerHTML = 
+                        '<div class="empty-state">Error loading metrics</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('metricsGrid').innerHTML = 
+                    '<div class="empty-state">Error connecting to server</div>';
+            }
+        }
+        
+        // Display metrics in grid layout
+        function displayMetrics(metrics) {
+            const grid = document.getElementById('metricsGrid');
+            
+            if (metrics.length === 0) {
+                grid.innerHTML = '<div class="empty-state">No metrics available</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            
+            metrics.forEach(metric => {
+                const card = document.createElement('div');
+                card.className = 'metric-card';
+                card.onclick = () => selectMetric(metric);
+                
+                // Format the normal range
+                let rangeText = '';
+                if (metric.normal_range_min !== null && metric.normal_range_max !== null) {
+                    rangeText = `Normal range: ${metric.normal_range_min} - ${metric.normal_range_max} ${metric.unit || ''}`;
+                } else if (metric.normal_range_min !== null) {
+                    rangeText = `Normal range: > ${metric.normal_range_min} ${metric.unit || ''}`;
+                } else if (metric.normal_range_max !== null) {
+                    rangeText = `Normal range: < ${metric.normal_range_max} ${metric.unit || ''}`;
+                }
+                
+                // Capitalize category
+                const category = metric.category ? 
+                    metric.category.charAt(0).toUpperCase() + metric.category.slice(1) : 'Other';
+                
+                card.innerHTML = `
+                    <div class="metric-category">${category}</div>
+                    <div class="metric-name">${metric.display_name}</div>
+                    <div class="metric-description">${metric.description || ''}</div>
+                    <div class="metric-range">${rangeText}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Select a metric to log
+        function selectMetric(metric) {
+            selectedMetric = metric;
+            const { minValue, maxValue } = getReasonableRange(metric);
+            // Set up the form
+            document.getElementById('formTitle').textContent = `Log ${metric.display_name}`;
+            document.getElementById('metricId').value = metric.metric_id;
+            document.getElementById('valueLabel').textContent = 
+                `Value ${metric.unit ? '(' + metric.unit + ')' : ''}:`;
+            const valueInput = document.getElementById('metricValue');
+            valueInput.value = '';
+            valueInput.min = minValue;
+            valueInput.max = maxValue;
+            valueInput.setAttribute('title', `Valid range: ${minValue} to ${maxValue} ${metric.unit || ''}`);
+            document.getElementById('metricValue').value = '';
+            document.getElementById('metricNotes').value = '';
+            
+            // Show the form
+            document.getElementById('metricForm').style.display = 'block';
+            document.getElementById('metricValue').focus();
+            
+            // Load history for this metric
+            loadMetricHistory(metric.metric_id);
+            
+            // Scroll to form
+            document.getElementById('metricForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        function getReasonableRange(metric) {
+    const metricName = (metric.name || '').toLowerCase();
+    const metricDisplayName = (metric.display_name || '').toLowerCase();
+    
+    // Set reasonable min/max values based on metric type
+    if (metricName.includes('temperature') || metricDisplayName.includes('temperature')) {
+        return { minValue: 30, maxValue: 45 }; // Body temp in Celsius
+    }
+    
+    if (metricName.includes('heart_rate') || metricDisplayName.includes('heart rate')) {
+        return { minValue: 20, maxValue: 250 }; // Heart rate in BPM
+    }
+    
+    if (metricName.includes('blood_pressure') || metricDisplayName.includes('systolic')) {
+        return { minValue: 60, maxValue: 250 }; // Systolic BP in mmHg
+    }
+    
+    if (metricName.includes('diastolic')) {
+        return { minValue: 40, maxValue: 150 }; // Diastolic BP in mmHg
+    }
+    
+    if (metricName.includes('weight')) {
+        return { minValue: 0.5, maxValue: 700 }; // Weight in kg
+    }
+    
+    if (metricName.includes('glucose') || metricDisplayName.includes('blood sugar')) {
+        return { minValue: 20, maxValue: 600 }; // Blood glucose in mg/dL
+    }
+    
+    if (metricName.includes('oxygen') || metricDisplayName.includes('spo2')) {
+        return { minValue: 50, maxValue: 100 }; // Oxygen saturation in %
+    }
+    
+    // Default range for other metrics
+    return { minValue: 0, maxValue: 10000 };
+} 
+        
+        // Hide the form
+        function hideForm() {
+            document.getElementById('metricForm').style.display = 'none';
+        }
+        
+        // Load history for a specific metric
+        async function loadMetricHistory(metricId) {
+            const historySection = document.getElementById('historySection');
+            const historyList = document.getElementById('historyList');
+            
+            historySection.style.display = 'block';
+            historyList.innerHTML = '<div class="empty-state">Loading history...</div>';
+            
+            try {
+                const userId = localStorage.getItem('userId');
+                const response = await fetch(`/user/metrics/${userId}/${metricId}`);
+                
+                if (response.ok) {
+                    const history = await response.json();
+                    
+                    if (history.length === 0) {
+                        historyList.innerHTML = '<div class="empty-state">No history available for this metric</div>';
+                        return;
+                    }
+                    
+                    // Update history title
+                    document.getElementById('historyTitle').textContent = 
+                        `${selectedMetric.display_name} History`;
+                    
+                    // Clear and populate list
+                    historyList.innerHTML = '';
+                    
+                    history.forEach(entry => {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        
+                        const date = new Date(entry.recorded_at);
+                        const formattedDate = date.toLocaleString();
+                        
+                        item.innerHTML = `
+                            <div class="history-date">${formattedDate}</div>
+                            <div class="history-value">${entry.value} ${entry.unit || ''}</div>
+                            ${entry.notes ? `<div class="history-notes">${entry.notes}</div>` : ''}
+                        `;
+                        
+                        historyList.appendChild(item);
+                    });
+                } else {
+                    historyList.innerHTML = '<div class="empty-state">Error loading history</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                historyList.innerHTML = '<div class="empty-state">Error connecting to server</div>';
+            }
+        }
+        
+        // Save metric log
+        document.getElementById('logMetricForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const messageEl = document.getElementById('message');
+            const userId = localStorage.getItem('userId');
+            const metricId = document.getElementById('metricId').value;
+            const value = document.getElementById('metricValue').value;
+            const notes = document.getElementById('metricNotes').value;
+            if (!isValidMetricValue(selectedMetric, value)) {
+                messageEl.className = 'message error';
+                messageEl.textContent = `The value you entered is outside of reasonable limits for ${selectedMetric.display_name}. Please check your input.`;
+                messageEl.style.display = 'block';
+                return;
+            }
+            try {
+                const response = await fetch('/health/metric/log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        metricId: metricId,
+                        value: value,
+                        notes: notes
+                    })
+                });
+                
+                if (response.ok) {
+                    // Show success message
+                    messageEl.className = 'message success';
+                    messageEl.textContent = 'Metric saved successfully!';
+                    messageEl.style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('metricValue').value = '';
+                    document.getElementById('metricNotes').value = '';
+                    
+                    // Reload history
+                    loadMetricHistory(metricId);
+                    
+                    // Hide message after delay
+                    setTimeout(() => {
+                        messageEl.style.display = 'none';
+                    }, 3000);
+                } else {
+                    messageEl.className = 'message error';
+                    messageEl.textContent = 'Failed to save metric. Please try again.';
+                    messageEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageEl.className = 'message error';
+                messageEl.textContent = 'Error connecting to server. Please try again.';
+                messageEl.style.display = 'block';
+            }
+        });
+        function isValidMetricValue(metric, value) {
+    if (value === null || isNaN(value)) return false;
+    
+    const metricName = (metric.name || '').toLowerCase();
+    const metricDisplayName = (metric.display_name || '').toLowerCase();
+    
+    // Define reasonable ranges for common metrics
+    if (metricName.includes('temperature') || metricDisplayName.includes('temperature')) {
+        // Body temperature in reasonable range (Celsius)
+        return value >= 30 && value <= 45;
+    }
+    
+    if (metricName.includes('heart_rate') || metricDisplayName.includes('heart rate') || 
+        metricName.includes('pulse') || metricDisplayName.includes('pulse')) {
+        // Heart rate in reasonable range (BPM)
+        return value >= 20 && value <= 250;
+    }
+    
+    if (metricName.includes('blood_pressure') || metricDisplayName.includes('blood pressure') ||
+        metricName.includes('systolic') || metricDisplayName.includes('systolic')) {
+        // Blood pressure (systolic) in reasonable range (mmHg)
+        return value >= 60 && value <= 250;
+    }
+    
+    if (metricName.includes('diastolic') || metricDisplayName.includes('diastolic')) {
+        // Blood pressure (diastolic) in reasonable range (mmHg)
+        return value >= 40 && value <= 150;
+    }
+    
+    if (metricName.includes('weight') || metricDisplayName.includes('weight')) {
+        // Weight in reasonable range (kg)
+        return value >= 0.5 && value <= 700;
+    }
+    
+    if (metricName.includes('glucose') || metricDisplayName.includes('glucose') ||
+        metricName.includes('blood sugar') || metricDisplayName.includes('blood sugar')) {
+        // Blood glucose in reasonable range (mg/dL)
+        return value >= 20 && value <= 600;
+    }
+    
+    if (metricName.includes('oxygen') || metricDisplayName.includes('oxygen') ||
+        metricName.includes('spo2') || metricDisplayName.includes('spo2')) {
+        // Oxygen saturation in reasonable range (%)
+        return value >= 50 && value <= 100;
+    }
+    
+    // For any other metrics, enforce a basic range check
+    // Reject negative values or extremely large values
+    return value >= 0 && value <= 10000;
+}
+        
+        // Load metrics when page loads
+        window.addEventListener('load', loadMetrics);
+    </script>
+</body>
+</html>

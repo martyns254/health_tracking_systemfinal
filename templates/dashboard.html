@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dashboard - Health Tracking System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3c6382;
+            --primary-light: #60a3bc;
+            --secondary: #38ada9;
+            --accent: #e58e26;
+            --background: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #57606f;
+            --success: #44bd32;
+            --warning: #e1b12c;
+            --danger: #c23616;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background-color: var(--primary);
+            color: white;
+            padding: 2rem 1rem;
+            position: fixed;
+            width: 240px;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 1.5rem 1rem 0.5rem;
+        }
+
+        /* Main content styles */
+        .main-content {
+            grid-column: 2;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+
+        .greeting {
+            line-height: 1.4;
+        }
+
+        .greeting h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .greeting p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2a9d8f;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: #d17e1e;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #a32511;
+        }
+
+        /* Dashboard sections */
+        .dashboard-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stat-primary {
+            background-color: rgba(60, 99, 130, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-secondary {
+            background-color: rgba(56, 173, 169, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-accent {
+            background-color: rgba(229, 142, 38, 0.1);
+            color: var(--accent);
+        }
+
+        .stat-success {
+            background-color: rgba(68, 189, 50, 0.1);
+            color: var(--success);
+        }
+
+        .stat-info {
+            flex-grow: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .health-logs {
+            grid-column: span 6;
+            min-height: 400px;
+        }
+
+        .symptoms {
+            grid-column: span 6;
+            min-height: 400px;
+        }
+
+        .quick-actions {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .health-chart {
+            grid-column: span 12;
+            padding-bottom: 1.5rem;
+        }
+
+        .activity-logs {
+            grid-column: span 12;
+        }
+
+        .action-card {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .action-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .action-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            max-width: 250px;
+        }
+
+        .log-entry {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            background-color: rgba(60, 99, 130, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .log-entry-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .log-date {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .log-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .log-item {
+            margin: 0.3rem 0;
+        }
+
+        .log-label {
+            font-weight: 500;
+            margin-right: 0.3rem;
+        }
+
+        .log-value {
+            display: inline-block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .severity-low {
+            background-color: rgba(68, 189, 50, 0.1);
+            color: var(--success);
+        }
+
+        .severity-medium {
+            background-color: rgba(225, 177, 44, 0.1);
+            color: var(--warning);
+        }
+
+        .severity-high {
+            background-color: rgba(194, 54, 22, 0.1);
+            color: var(--danger);
+        }
+
+        .see-all {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .see-all i {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .health-logs, .symptoms {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+
+            .sidebar-header {
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .main-content {
+                grid-column: 1;
+                padding: 1.5rem;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .dashboard-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .dashboard-grid {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stat-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+
+            .action-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .action-icon {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+
+            .log-details {
+                grid-template-columns: 1fr;
+            }
+            .delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 2px 5px;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .delete-btn:hover {
+            opacity: 1;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal-title {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .confirm-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; }
+}
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Health Tracker</h2>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </li>
+                
+                <p class="menu-label">Health Management</p>
+                
+                <li class="menu-item" onclick="showHealthLog()">
+                    <i class="fas fa-notes-medical"></i>
+                    <span>Health Log</span>
+                </li>
+                
+                <li class="menu-item" onclick="showSymptomAnalysis()">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Symptom Analysis</span>
+                </li>
+                
+                <li class="menu-item" onclick="showMedicalHistory()">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Medical History</span>
+                </li>
+                
+                <p class="menu-label">Data & Analysis</p>
+                
+                <li class="menu-item" onclick="window.location.href='/health/trends'">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Health Trends</span>
+                </li>
+                
+                <li class="menu-item" onclick="window.location.href='/health/metrics/track'">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Metrics</span>
+                </li>
+                <li class="menu-item" onclick="window.location.href='/health/visualization'">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Health Visualizations</span>
+                </li>
+                
+                <p class="menu-label">Account</p>
+                
+                <li class="menu-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="user-info">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div class="greeting">
+                        <h2>Welcome, <span id="username">User</span></h2>
+                        <p id="currentDate">Loading date...</p>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="showHealthLog()">
+                        <i class="fas fa-plus"></i>
+                        <span>Log Health</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSymptomAnalysis()">
+                        <i class="fas fa-search"></i>
+                        <span>Analyze Symptoms</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Overview -->
+            <div class="dashboard-overview">
+                <div class="stat-card">
+                    <div class="stat-icon stat-primary">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalLogsValue">0</div>
+                        <div class="stat-label">Health Logs</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-secondary">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="avgTempValue">--</div>
+                        <div class="stat-label">Avg Temperature</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-accent">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="symptomCountValue">0</div>
+                        <div class="stat-label">Symptoms Reported</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon stat-success">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="healthScoreValue">--</div>
+                        <div class="stat-label">Health Score</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Recent Health Logs -->
+                <div class="dashboard-card health-logs">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Health Logs</h3>
+                        <a href="/health/log" class="see-all">See all <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    
+                    <div id="recentLogs">
+                        <div class="empty-state">
+                            <i class="fas fa-file-medical"></i>
+                            <h4>No health logs yet</h4>
+                            <p>Start tracking your health by adding your first health log.</p>
+                            <button class="btn btn-primary" onclick="showHealthLog()">Add Health Log</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Symptoms -->
+                <div class="dashboard-card symptoms">
+                    <div class="card-header">
+                        <h3 class="card-title">Recent Symptoms</h3>
+                        <a href="/symptoms" class="see-all">See all <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    
+                    <div id="recentSymptoms">
+                        <div class="empty-state">
+                            <i class="fas fa-stethoscope"></i>
+                            <h4>No symptoms logged</h4>
+                            <p>Track symptoms to receive useful health insights.</p>
+                            <button class="btn btn-secondary" onclick="showSymptomAnalysis()">Add Symptoms</button>
+                        </div>
+                    </div>
+                </div>
+                    
+                
+                
+                <!-- Health Chart -->
+                <div class="dashboard-card health-chart">
+                    <div class="card-header">
+                        <h3 class="card-title">Your Health Overview</h3>
+                        <div class="card-actions">
+                            <select id="chartPeriod" class="btn btn-secondary" onchange="updateHealthChart()">
+                                <option value="7">Last 7 days</option>
+                                <option value="14">Last 14 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Quick Access Cards -->
+                <div class="quick-actions">
+                    <div class="action-card" onclick="showHealthLog()">
+                        <div class="action-icon stat-primary">
+                            <i class="fas fa-notes-medical"></i>
+                        </div>
+                        <div class="action-info">
+                            <h3>Quick Health Check</h3>
+                            <p>Log your temperature, symptoms and current health status</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card" onclick="showSymptomAnalysis()">
+                        <div class="action-icon stat-secondary">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <div class="action-info">
+                            <h3>Symptom Analysis</h3>
+                            <p>Get instant recommendations based on your symptoms</p>
+                        </div>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='/health/visualization'">
+                        <div class="action-icon stat-primary">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="action-info">
+                            <h3>Health Visualizations</h3>
+                            <p>View interactive charts of your health metrics</p>
+                        </div>
+                    </div>
+                    <div class="action-card" onclick="showMedicalHistory()">
+                        <div class="action-icon stat-accent">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <div class="action-info">
+                            <h3>Medical History</h3>
+                            <p>View and update your medical conditions and history</p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card" onclick="window.location.href='/health/trends'">
+                        <div class="action-icon stat-success">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="action-info">
+                            <h3>Health Trends</h3>
+                            <p>View community health trends based on anonymous data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="deleteConfirmModal" class="modal">
+            <div class="modal-content">
+                <h3 class="modal-title">Confirm Deletion</h3>
+                <p>Are you sure you want to delete this health log? This action cannot be undone.</p>
+                <div class="modal-buttons">
+                    <button id="cancelDeleteBtn" class="modal-btn cancel-btn">Cancel</button>
+                    <button id="confirmDeleteBtn" class="modal-btn confirm-btn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const usernameEl = document.getElementById('username');
+        const userAvatarEl = document.getElementById('userAvatar');
+        const currentDateEl = document.getElementById('currentDate');
+        const totalLogsValueEl = document.getElementById('totalLogsValue');
+        const avgTempValueEl = document.getElementById('avgTempValue');
+        const symptomCountValueEl = document.getElementById('symptomCountValue');
+        const healthScoreValueEl = document.getElementById('healthScoreValue');
+        const recentLogsEl = document.getElementById('recentLogs');
+        const recentSymptomsEl = document.getElementById('recentSymptoms');
+        
+        // Chart instance
+        let healthChart;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                initializeDashboard(username);
+            } else {
+                window.location.href = '/login';
+            }
+        });
+        
+        // Initialize dashboard
+        function initializeDashboard(username) {
+            usernameEl.textContent = username;
+            currentDateEl.textContent = formatDate(new Date());
+            
+            // Set user avatar initial
+            if (username) {
+                userAvatarEl.textContent = username.charAt(0).toUpperCase();
+            }
+            
+            // Load user data
+            loadUserData();
+            
+            // Initialize health chart
+            initializeHealthChart();
+        }
+        
+        // Load user data
+        async function loadUserData() {
+            loadRecentLogs();
+            loadRecentSymptoms();
+            loadUserStats();
+        }
+        
+        // Load recent health logs
+        async function loadRecentLogs() {
+            const userId = localStorage.getItem('userId');
+            
+            try {
+                const response = await fetch(`/health/logs/${userId}`);
+                if (response.ok) {
+                    const logs = await response.json();
+                    
+                    if (logs.length > 0) {
+                        const logsHtml = logs.map(log => {
+                            return `
+                                <div class="log-entry">
+                                    <div class="log-entry-header">
+                                        <strong>${formatDate(new Date(log.recorded_at))}</strong>
+                                        <span class="log-date">${formatTime(new Date(log.recorded_at))}</span>
+                                    </div>
+                                    <div class="log-details">
+                                        <div class="log-item">
+                                            <span class="log-label">Temperature:</span>
+                                            <span class="log-value">${log.temperature ? log.temperature + ' °C' : 'Not recorded'}</span>
+                                        </div>
+                                        <div class="log-item">
+                                            <span class="log-label">Symptoms:</span>
+                                            <span class="log-value">${log.symptoms ? log.symptoms : 'None'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        recentLogsEl.innerHTML = logsHtml;
+                    }
+                } else {
+                    console.error('Failed to load health logs');
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+            }
+        }
+        
+        // Load recent symptoms
+        async function loadRecentSymptoms() {
+            const userId = localStorage.getItem('userId');
+            
+            try {
+                const response = await fetch(`/symptoms/logs/${userId}`);
+                if (response.ok) {
+                    const symptoms = await response.json();
+                    
+                    if (symptoms.length > 0) {
+                        const symptomsHtml = symptoms.map(symptom => {
+                            const severityClass = getSeverityClass(symptom.severity);
+                            
+                            return `
+                                <div class="log-entry">
+                                    <div class="log-entry-header">
+                                        <strong>${formatDate(new Date(symptom.recorded_at))}</strong>
+                                        <span class="log-date">${formatTime(new Date(symptom.recorded_at))}</span>
+                                    </div>
+                                    <div class="log-details">
+                                        <div class="log-item">
+                                            <span class="log-label">Symptom:</span>
+                                            <span class="log-value">${symptom.symptom_name}</span>
+                                        </div>
+                                        <div class="log-item">
+                                            <span class="log-label">Severity:</span>
+                                            <span class="severity-badge ${severityClass}">${symptom.severity}/10</span>
+                                        </div>
+                                        <div class="log-item">
+                                            <span class="log-label">Duration:</span>
+                                            <span class="log-value">${symptom.duration || 'Not specified'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        recentSymptomsEl.innerHTML = symptomsHtml;
+                    }
+                } else {
+                    console.error('Failed to load symptoms');
+                }
+            } catch (error) {
+                console.error('Error loading symptoms:', error);
+            }
+        }
+        
+        
+        // Load user statistics
+        async function loadUserStats() {
+            const userId = localStorage.getItem('userId');
+            
+            try {
+                // Get health logs for statistics
+                const logsResponse = await fetch(`/health/logs/${userId}`);
+                if (logsResponse.ok) {
+                    const logs = await logsResponse.json();
+                    totalLogsValueEl.textContent = logs.length;
+                    
+                    // Calculate average temperature
+                    const temperatures = logs
+                        .filter(log => log.temperature && !isNaN(parseFloat(log.temperature)))
+                        .map(log => parseFloat(log.temperature));
+                    
+                    if (temperatures.length > 0) {
+                        const avgTemp = temperatures.reduce((sum, temp) => sum + temp, 0) / temperatures.length;
+                        avgTempValueEl.textContent = avgTemp.toFixed(1) + ' °C';
+                    }
+                }
+                
+                // Get symptoms count
+                const symptomsResponse = await fetch(`/symptoms/logs/${userId}`);
+                if (symptomsResponse.ok) {
+                    const symptoms = await symptomsResponse.json();
+                    symptomCountValueEl.textContent = symptoms.length;
+                    
+                    // Calculate approximate health score (simple algorithm)
+                    calculateHealthScore(symptoms);
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+            }
+        }
+        
+        // Calculate user health score
+        function calculateHealthScore(symptoms) {
+            // Base score starts at 100
+            let score = 100;
+            
+            // Reduce score based on recent symptoms (last 7 days)
+            const recentSymptoms = symptoms.filter(s => {
+                const symptomDate = new Date(s.recorded_at);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return symptomDate >= weekAgo;
+            });
+            
+            // Deduct points for each recent symptom based on severity
+            recentSymptoms.forEach(symptom => {
+                const severity = parseInt(symptom.severity) || 0;
+                score -= severity * 2; // Higher severity reduces score more
+            });
+            
+            // Ensure score doesn't go below 0
+            score = Math.max(0, score);
+            
+            // Update the health score display
+            healthScoreValueEl.textContent = Math.round(score);
+            
+            // Set color based on score range
+            if (score >= 80) {
+                healthScoreValueEl.style.color = 'var(--success)';
+            } else if (score >= 50) {
+                healthScoreValueEl.style.color = 'var(--warning)';
+            } else {
+                healthScoreValueEl.style.color = 'var(--danger)';
+            }
+        }
+        
+        // Initialize health chart
+        function initializeHealthChart() {
+            const ctx = document.getElementById('healthChart').getContext('2d');
+            
+            // Get the initially selected period
+            const periodSelect = document.getElementById('chartPeriod');
+            const days = parseInt(periodSelect.value) || 30;
+            
+            // Generate placeholder data if no actual data is available
+            const labels = generateDateLabels(days);
+            const tempData = generateRandomData(days, 36.5, 37.5);
+            
+            healthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: tempData,
+                            borderColor: 'rgb(60, 99, 130)',
+                            backgroundColor: 'rgba(60, 99, 130, 0.1)',
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 35,
+                            max: 40,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            },
+                            ticks: {
+                                stepSize: 0.5
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: `Last ${days} Days`
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(1) + ' °C';
+                                    }
+                                    return label;
+                                },
+                                afterLabel: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        const temp = context.parsed.y;
+                                        if (temp < 36) return 'Below normal';
+                                        if (temp <= 37.3) return 'Normal';
+                                        if (temp <= 38) return 'Mild fever';
+                                        if (temp <= 39.5) return 'Fever';
+                                        return 'High fever';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Try to load actual user data
+            loadHealthChartData();
+        }
+        
+        // Load actual chart data
+        async function loadHealthChartData() {
+    // Get user ID and selected period
+    const userId = localStorage.getItem('userId');
+    const periodSelect = document.getElementById('chartPeriod');
+    const days = parseInt(periodSelect.value) || 30;
+    
+    console.log(`Loading chart data for the last ${days} days`);
+    
+    try {
+        // Fetch all health logs for the user
+        const response = await fetch(`/health/logs/${userId}`);
+        
+        if (response.ok) {
+            const logs = await response.json();
+            
+            // Process data for chart
+            if (logs && logs.length > 0) {
+                // Calculate the date for filtering (e.g., 7 days ago from now)
+                const periodStart = new Date();
+                periodStart.setDate(periodStart.getDate() - days);
+                periodStart.setHours(0, 0, 0, 0); // Set to beginning of the day
+                
+                console.log(`Filtering logs from ${periodStart.toISOString()}`);
+                
+                // Filter logs that are newer than the start date
+                const filteredLogs = logs.filter(log => {
+                    const logDate = new Date(log.recorded_at);
+                    // Compare if log date is greater than or equal to period start date
+                    return logDate >= periodStart;
+                });
+                
+                console.log(`Found ${filteredLogs.length} logs in the selected period out of ${logs.length} total`);
+                
+                // Sort by date ascending
+                filteredLogs.sort((a, b) => new Date(a.recorded_at) - new Date(b.recorded_at));
+                
+                // Extract dates and temperature values
+                const dates = filteredLogs.map(log => formatDate(new Date(log.recorded_at)));
+                const temps = filteredLogs.map(log => {
+                    // Safely parse temperature as float
+                    if (!log.temperature) return null;
+                    const temp = parseFloat(log.temperature);
+                    return isNaN(temp) ? null : temp;
+                });
+                
+                // Update chart with actual data
+                if (dates.length > 0 && temps.some(t => t !== null)) {
+                    // Update chart data
+                    healthChart.data.labels = dates;
+                    healthChart.data.datasets[0].data = temps;
+                    
+                    // Update chart options for the selected period
+                    healthChart.options.scales.x.title = {
+                        display: true,
+                        text: `Last ${days} Days`
+                    };
+                    
+                    // Apply changes
+                    healthChart.update();
+                    console.log('Chart updated with filtered data');
+                    
+                    // Show success notification
+                    showNotification(`Chart updated to show data for the last ${days} days`, 'success');
+                } else {
+                    // If no data in the period, show empty chart with proper time labels
+                    const emptyLabels = generateDateLabels(days);
+                    const emptyData = Array(days).fill(null);
+                    
+                    healthChart.data.labels = emptyLabels;
+                    healthChart.data.datasets[0].data = emptyData;
+                    
+                    // Update chart options for the selected period
+                    healthChart.options.scales.x.title = {
+                        display: true,
+                        text: `Last ${days} Days`
+                    };
+                    
+                    healthChart.update();
+                    console.log('Chart updated with empty data for selected period');
+                    
+                    // Show notification about no data
+                    showNotification(`No health data available for the last ${days} days`, 'warning');
+                }
+            } else {
+                // No logs at all - show empty chart
+                const emptyLabels = generateDateLabels(days);
+                const emptyData = Array(days).fill(null);
+                
+                healthChart.data.labels = emptyLabels;
+                healthChart.data.datasets[0].data = emptyData;
+                
+                // Update chart options for the selected period
+                healthChart.options.scales.x.title = {
+                    display: true,
+                    text: `Last ${days} Days`
+                };
+                
+                healthChart.update();
+                console.log('No health logs found, showing empty chart');
+            }
+        } else {
+            // Show error notification
+            console.error('Failed to fetch health logs:', response.status);
+            showNotification('Failed to load health data from server', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading chart data:', error);
+        showNotification('Failed to load chart data: ' + error.message, 'error');
+    }
+}
+// Load health logs for display and deletion functionality
+async function loadHealthLogs() {
+    const userId = localStorage.getItem('userId');
+    const container = document.getElementById('healthLogsContainer');
+    
+    try {
+        const response = await fetch(`/health/logs/${userId}`);
+        if (!response.ok) throw new Error('Failed to load health logs');
+        
+        const logs = await response.json();
+        
+        if (logs.length === 0) {
+            container.innerHTML = '<div class="empty-message">No health logs found</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        logs.forEach(log => {
+            const date = new Date(log.recorded_at);
+            const formattedDate = formatDate(date);
+            
+            const logItem = document.createElement('div');
+            logItem.className = 'log-entry';
+            
+            // Create the log content with a delete button
+            logItem.innerHTML = `
+                <div class="log-entry-header">
+                    <div>
+                        <strong>${formattedDate}</strong>
+                        <span class="log-date">${formatTime(date)}</span>
+                    </div>
+                    <button class="delete-btn" data-id="${log.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="log-details">
+                    ${log.temperature ? `<div class="log-item">
+                        <span class="log-label">Temperature:</span>
+                        <span class="log-value">${log.temperature}°C</span>
+                    </div>` : ''}
+                    ${log.symptoms ? `<div class="log-item">
+                        <span class="log-label">Symptoms:</span>
+                        <span class="log-value">${log.symptoms}</span>
+                    </div>` : ''}
+                    ${log.notes ? `<div class="log-item">
+                        <span class="log-label">Notes:</span>
+                        <span class="log-value">${log.notes}</span>
+                    </div>` : ''}
+                </div>
+            `;
+            
+            container.appendChild(logItem);
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                showDeleteConfirmation(this.getAttribute('data-id'));
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error loading health logs:', error);
+        container.innerHTML = '<div class="error-message">Error loading health logs</div>';
+    }
+}
+async function deleteHealthLog(logId) {
+            try {
+                const response = await fetch(`/health/log/${logId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    // Reload the logs
+                    loadHealthLogs();
+                    
+                    // Show a temporary success message
+                    const container = document.getElementById('healthLogsContainer');
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'success-message';
+                    successMsg.textContent = 'Health log deleted successfully';
+                    container.prepend(successMsg);
+                    
+                    // Remove the message after 3 seconds
+                    setTimeout(() => {
+                        if (successMsg.parentNode) {
+                            successMsg.parentNode.removeChild(successMsg);
+                        }
+                    }, 3000);
+                } else {
+                    console.error('Failed to delete health log');
+                }
+            } catch (error) {
+                console.error('Error deleting health log:', error);
+            }
+        }
+
+
+// Update chart based on selected period
+function updateHealthChart() {
+    console.log('Chart period changed, updating chart...');
+    
+    // Clear existing chart data before loading new data
+    healthChart.data.labels = [];
+    healthChart.data.datasets[0].data = [];
+    healthChart.update();
+    
+    // Now load the new data based on the selected period
+    loadHealthChartData();
+}
+
+// Helper: Generate date labels for chart
+function generateDateLabels(days) {
+    const dates = [];
+    const today = new Date();
+    
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(today.getDate() - i);
+        dates.push(formatDate(date));
+    }
+    
+    return dates;
+}
+
+// Helper: Generate random data for chart placeholder
+function generateRandomData(count, min, max) {
+    return Array.from({ length: count }, () => Math.random() * (max - min) + min);
+}
+
+// Helper: Get severity class for symptom display
+function getSeverityClass(severity) {
+    const value = parseInt(severity) || 0;
+    if (value <= 3) return 'severity-low';
+    if (value <= 7) return 'severity-medium';
+    return 'severity-high';
+}
+
+// Helper: Format date as "Mon, 15 Apr"
+function formatDate(date) {
+    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    return date.toLocaleDateString('en-US', options);
+}
+        
+        // Helper: Format time as "14:30"
+        function formatTime(date) {
+            const options = { hour: '2-digit', minute: '2-digit' };
+            return date.toLocaleTimeString('en-US', options);
+        }
+        document.addEventListener('DOMContentLoaded', function() {});
+        // Navigation functions
+        function showHealthLog() {
+            window.location.href = '/health/log';
+        }
+        loadHealthLogs();
+        
+        function showSymptomAnalysis() {
+            window.location.href = '/symptom/analysis';
+        }
+        
+        function showMedicalHistory() {
+            window.location.href = '/medical/history';
+        }
+        
+        function logout() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('userId');
+            window.location.href = '/login';
+        }
+        // Display notification messages
+function showNotification(message, type = 'info') {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'notification';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '10px 20px';
+        notification.style.borderRadius = '5px';
+        notification.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+        notification.style.zIndex = '9999';
+        notification.style.opacity = '0';
+        notification.style.transition = 'opacity 0.3s ease';
+        document.body.appendChild(notification);
+    }
+
+    // Set style based on notification type
+    switch(type) {
+        case 'success':
+            notification.style.backgroundColor = '#d4edda';
+            notification.style.color = '#155724';
+            notification.style.borderLeft = '4px solid #28a745';
+            break;
+        case 'warning':
+            notification.style.backgroundColor = '#fff3cd';
+            notification.style.color = '#856404';
+            notification.style.borderLeft = '4px solid #ffc107';
+            break;
+        case 'error':
+            notification.style.backgroundColor = '#f8d7da';
+            notification.style.color = '#721c24';
+            notification.style.borderLeft = '4px solid #dc3545';
+            break;
+        default:
+            notification.style.backgroundColor = '#d1ecf1';
+            notification.style.color = '#0c5460';
+            notification.style.borderLeft = '4px solid #17a2b8';
+    }
+
+    // Set message and display notification
+    notification.textContent = message;
+    notification.style.opacity = '1';
+
+    // Hide notification after a delay
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
+// Show confirmation modal before deleting
+function showDeleteConfirmation(logId) {
+    const modal = document.getElementById('deleteConfirmModal');
+    modal.style.display = 'flex';
+    
+    // Set the log ID to the confirm button
+    document.getElementById('confirmDeleteBtn').setAttribute('data-id', logId);
+    
+    // Handle cancel button
+    document.getElementById('cancelDeleteBtn').onclick = function() {
+        modal.style.display = 'none';
+    };
+    
+    // Handle confirm button
+    document.getElementById('confirmDeleteBtn').onclick = function() {
+        deleteHealthLog(this.getAttribute('data-id'));
+        modal.style.display = 'none';
+    };
+}
+    </script>
+    </body>
+</html>

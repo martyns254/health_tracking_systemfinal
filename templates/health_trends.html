@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Trends - Health Tracking System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            padding: 1rem;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .back-button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-description {
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+
+        .filter-bar {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .filter-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+
+        .filter-button:hover {
+            background-color: #2980b9;
+        }
+
+        .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .trend-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trend-header {
+            background-color: #3498db;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .trend-body {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trend-chart-container {
+            height: 250px;
+            margin: 0.5rem 0;
+            position: relative;
+            flex: 1;
+        }
+
+        .trend-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+        }
+
+        .chart-note {
+            margin-top: 0.5rem;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .no-trends {
+            background-color: white;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            color: #7f8c8d;
+            grid-column: 1 / -1;
+        }
+
+        .loading {
+            background-color: white;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            color: #7f8c8d;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .trends-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <div class="nav-buttons">
+                <button onclick="goBack()" class="back-button">← Back</button>
+            </div>
+            <h2>Health Trends</h2>
+            <div class="nav-buttons">
+                <button onclick="goToDashboard()" class="back-button">Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Community Health Trends</h1>
+            <p class="page-description">
+                Explore aggregated and anonymized health data to understand current health trends in your community.
+                All data is anonymous and shown in aggregate to protect user privacy.
+            </p>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">Trend Type</label>
+                <select class="filter-select" id="trendTypeFilter">
+                    <option value="all">All Trends</option>
+                    <option value="symptoms">Symptoms</option>
+                    <option value="vitals">Vital Signs</option>
+                    <option value="metrics">Health Metrics</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Time Period</label>
+                <select class="filter-select" id="timeFilter">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d" selected>Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                    <option value="1y">Last Year</option>
+                </select>
+            </div>
+            
+            <button class="filter-button" onclick="loadTrends()">Apply Filters</button>
+        </div>
+
+        <div class="trends-grid" id="trendsGrid">
+            <div class="loading">Loading health trends...</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTrends();
+        });
+        
+        function goBack() {
+            window.history.back();
+        }
+        
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+        
+        async function loadTrends() {
+            const trendsGrid = document.getElementById('trendsGrid');
+            trendsGrid.innerHTML = '<div class="loading">Loading health trends...</div>';
+            
+            const trendType = document.getElementById('trendTypeFilter').value;
+            const timePeriod = document.getElementById('timeFilter').value;
+            
+            try {
+                const response = await fetch(`/public/trends?type=${trendType}&time=${timePeriod}`);
+                if (response.ok) {
+                    const trends = await response.json();
+                    displayTrends(trends);
+                } else {
+                    trendsGrid.innerHTML = '<div class="no-trends">Failed to load health trends</div>';
+                }
+            } catch (error) {
+                console.error('Error loading trends:', error);
+                trendsGrid.innerHTML = '<div class="no-trends">Error connecting to server</div>';
+            }
+        }
+        
+        function displayTrends(trends) {
+            const trendsGrid = document.getElementById('trendsGrid');
+            
+            if (!trends || trends.length === 0) {
+                trendsGrid.innerHTML = '<div class="no-trends">No health trends available for the selected filters</div>';
+                return;
+            }
+            
+            trendsGrid.innerHTML = '';
+            
+            trends.forEach((trend, index) => {
+                const card = document.createElement('div');
+                card.className = 'trend-card';
+                
+                // Create unique canvas ID for each chart
+                const chartId = `chart-${index}`;
+                
+                card.innerHTML = `
+                    <div class="trend-header">${trend.title}</div>
+                    <div class="trend-body">
+                        <div class="trend-chart-container">
+                            <canvas id="${chartId}"></canvas>
+                        </div>
+                        ${trend.description ? `<p class="chart-note">${trend.description}</p>` : ''}
+                        <div class="trend-stats">
+                            ${trend.stats ? trend.stats.map(stat => `
+                                <div class="stat-item">
+                                    <div class="stat-value">${stat.value}</div>
+                                    <div class="stat-label">${stat.label}</div>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                    </div>
+                `;
+                
+                trendsGrid.appendChild(card);
+                
+                // Create chart once element is in the DOM
+                setTimeout(() => {
+                    createChart(chartId, trend.chart_data, trend.chart_type);
+                }, 0);
+            });
+        }
+        
+        function createChart(chartId, data, chartType) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            
+            // Default to line chart if not specified
+            const type = chartType || 'line';
+            
+            new Chart(ctx, {
+                type: type,
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
