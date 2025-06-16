@@ -257,7 +257,7 @@
     e.preventDefault();
     const message = document.getElementById('message');
     
-    // Validate temperature
+    // Validate temperature 
     const temperature = parseFloat(document.getElementById('temperature').value);
     if (isNaN(temperature) || temperature < 35 || temperature > 43) {
         message.className = 'message error';
@@ -299,7 +299,7 @@
         message.textContent = 'An error occurred. Please try again.';
     }
 });
-// Add this script to provide real-time feedback
+// script for real-time feedback
 document.getElementById('temperature').addEventListener('input', function() {
     const temp = parseFloat(this.value);
     const feedbackEl = document.getElementById('tempFeedback');

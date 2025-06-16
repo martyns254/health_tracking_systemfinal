@@ -1047,7 +1047,7 @@
                     const symptoms = await symptomsResponse.json();
                     symptomCountValueEl.textContent = symptoms.length;
                     
-                    // Calculate approximate health score (simple algorithm)
+                    // Calculate approximate health score 
                     calculateHealthScore(symptoms);
                 }
             } catch (error) {
@@ -1434,13 +1434,13 @@ function getSeverityClass(severity) {
     return 'severity-high';
 }
 
-// Helper: Format date as "Mon, 15 Apr"
+
 function formatDate(date) {
     const options = { weekday: 'short', day: 'numeric', month: 'short' };
     return date.toLocaleDateString('en-US', options);
 }
         
-        // Helper: Format time as "14:30"
+       
         function formatTime(date) {
             const options = { hour: '2-digit', minute: '2-digit' };
             return date.toLocaleTimeString('en-US', options);
@@ -1467,7 +1467,7 @@ function formatDate(date) {
         }
         // Display notification messages
 function showNotification(message, type = 'info') {
-    // Create notification element if it doesn't exist
+    
     let notification = document.getElementById('notification');
     if (!notification) {
         notification = document.createElement('div');
@@ -1484,7 +1484,7 @@ function showNotification(message, type = 'info') {
         document.body.appendChild(notification);
     }
 
-    // Set style based on notification type
+    
     switch(type) {
         case 'success':
             notification.style.backgroundColor = '#d4edda';
