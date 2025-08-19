@@ -15,8 +15,9 @@ A comprehensive web-based health tracking platform that helps users monitor thei
 ## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.7+ 
+- pip (Python package manager)
 - Web browser (Chrome, Firefox, Safari, Edge)
-- Web server (Apache, Nginx, or local development server)
 
 ### Installation
 
@@ -26,34 +27,42 @@ A comprehensive web-based health tracking platform that helps users monitor thei
    cd health_tracking_systemfinal
    ```
 
-2. **Set up a local server**
-   
-   **Option 1: Using Python**
+2. **Create virtual environment (recommended)**
    ```bash
-   # Python 3
-   python -m http.server 8000
+   python -m venv venv
    
-   # Python 2
-   python -m SimpleHTTPServer 8000
-   ```
+   # Activate virtual environment
+   # On Windows:
+   venv\Scripts\activate
    
-   **Option 2: Using Node.js**
-   ```bash
-   npx http-server
-   ```
-   
-   **Option 3: Using PHP**
-   ```bash
-   php -S localhost:8000
+   # On macOS/Linux:
+   source venv/bin/activate
    ```
 
-3. **Open in browser**
-   Navigate to `http://localhost:8000` in your web browser
+3. **Install dependencies**
+   ```bash
+   pip install flask
+   pip install flask-sqlalchemy
+   pip install flask-login
+   pip install flask-wtf
+   # Add other dependencies as needed
+   ```
+
+4. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+5. **Open in browser**
+   Navigate to `http://localhost:5000` in your web browser
 
 ## 📁 Project Structure
 
 ```
 health_tracking_systemfinal/
+├── .github/workflows/          # GitHub Actions CI/CD
+├── server/                     # Backend server files
+├── static/css/                 # Stylesheets
 ├── templates/
 │   ├── index.html              # Welcome page
 │   ├── login.html              # User login
@@ -66,8 +75,9 @@ health_tracking_systemfinal/
 │   ├── medical_history.html    # Medical records
 │   ├── first_aid.html          # First aid information
 │   └── admin.html              # Admin panel
-├── static/                     # Static assets (CSS, JS, images)
-├── server/                     # Backend server files
+├── app.py                      # Main Flask application
+├── test.py                     # Test suite
+├── test_db.py                  # Database tests
 └── README.md                   # Project documentation
 ```
 
@@ -120,10 +130,15 @@ The system uses modern CSS with:
 
 ## 🔧 Technical Details
 
+- **Backend**: Python 3.7+ with Flask framework
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
+- **Database**: SQLAlchemy (SQLite/PostgreSQL/MySQL compatible)
+- **Authentication**: Flask-Login for user sessions
+- **Forms**: Flask-WTF for form handling and validation
 - **Responsive Framework**: Custom CSS Grid and Flexbox
 - **Icons**: Emoji and custom icon fonts
 - **Animation**: CSS animations and transitions
+- **Testing**: Python unittest framework
 - **Compatibility**: Modern browsers (Chrome 70+, Firefox 65+, Safari 12+)
 
 ## 🤝 Contributing
@@ -146,8 +161,33 @@ We welcome contributions! Here's how you can help:
    ```
 6. **Open a Pull Request**
 
+### Development Setup
+
+1. **Fork and clone the repository**
+2. **Set up development environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # or venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
+3. **Run tests**
+   ```bash
+   python test.py
+   python test_db.py
+   ```
+4. **Start development server**
+   ```bash
+   python app.py
+   ```
+5. **Make your changes**
+6. **Test thoroughly**
+7. **Submit pull request**
+
 ### Development Guidelines
-- Follow semantic HTML practices
+- Follow PEP 8 for Python code style
+- Use semantic HTML practices
+- Follow Flask best practices for route handling
+- Write tests for new features
 - Use consistent CSS naming conventions
 - Test on multiple browsers and devices
 - Ensure accessibility compliance
@@ -196,6 +236,6 @@ Easy-to-use forms for logging daily health data.
 
 ---
 
-**Made with ❤️ for healthier communities**
+##Made with ❤️ for healthier communities##
 
-For more information, visit our [GitHub repository](https://github.com/martyns254/health_tracking_systemfinal).
+For more information, visit my [GitHub repository](https://github.com/martyns254/health_tracking_systemfinal).
