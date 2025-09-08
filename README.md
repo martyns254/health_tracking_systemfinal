@@ -232,10 +232,10 @@ Easy-to-use forms for logging daily health data.
 
 - Thanks to all contributors who help improve this project
 - Inspired by modern healthcare technology and user experience design
-- Built with ❤️ for better health monitoring
+  
 
 ---
 
-##Made with ❤️ for healthier communities##
+##Made with the Purpose to Achieve  healthier communities##
 
 For more information, visit my [GitHub repository](https://github.com/martyns254/health_tracking_systemfinal).
