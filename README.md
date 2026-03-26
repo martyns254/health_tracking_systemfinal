@@ -1,18 +1,18 @@
-# 🏥 Health Tracking System
+#  Health Tracking System
 
 A comprehensive web-based health tracking platform that helps users monitor their wellness journey, set health goals, and maintain detailed medical records.
 
 ## ✨ Features
 
-- **📊 Health Metrics Tracking** - Monitor vital signs, weight, blood pressure, and other key health indicators
-- **🎯 Goal Setting** - Set and track personalized health and fitness goals
-- **📱 Responsive Design** - Modern, mobile-friendly interface that works on all devices
-- **📋 Medical History** - Maintain comprehensive medical records and appointment history
-- **📈 Progress Visualization** - View your health trends with interactive charts and graphs
-- **👤 User Management** - Secure user authentication and profile management
-- **🩺 Health Insights** - Get personalized recommendations based on your data
+- ** Health Metrics Tracking** - Monitor vital signs, weight, blood pressure, and other key health indicators
+- ** Goal Setting** - Set and track personalized health and fitness goals
+- ** Responsive Design** - Modern, mobile-friendly interface that works on all devices
+- ** Medical History** - Maintain comprehensive medical records and appointment history
+- ** Progress Visualization** - View your health trends with interactive charts and graphs
+- ** User Management** - Secure user authentication and profile management
+- ** Health Insights** - Get personalized recommendations based on your data
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Python 3.7+ 
@@ -56,7 +56,7 @@ A comprehensive web-based health tracking platform that helps users monitor thei
 5. **Open in browser**
    Navigate to `http://localhost:5000` in your web browser
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 health_tracking_systemfinal/
@@ -120,7 +120,7 @@ The system uses modern CSS with:
 2. Add corresponding styles and scripts
 3. Update navigation and routing as needed
 
-## 🎨 Design Features
+##  Design Features
 
 - **Modern UI/UX** - Clean, intuitive interface with smooth animations
 - **Glassmorphism Effects** - Contemporary design with backdrop blur
@@ -141,7 +141,7 @@ The system uses modern CSS with:
 - **Testing**: Python unittest framework
 - **Compatibility**: Modern browsers (Chrome 70+, Firefox 65+, Safari 12+)
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Here's how you can help:
 
@@ -197,7 +197,7 @@ We welcome contributions! Here's how you can help:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+##  Support
 
 Having issues? Here's how to get help:
 
@@ -228,7 +228,7 @@ Easy-to-use forms for logging daily health data.
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Thanks to all contributors who help improve this project
 - Inspired by modern healthcare technology and user experience design
